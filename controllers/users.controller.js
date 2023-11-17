@@ -90,9 +90,21 @@ exports.updateUserDetails = async (req, res, next) => {
   }
 };
 
-exports.verifyEmailToken = async (req, res, next) => {
+exports.sendResetToken = async (req, res, next) => {
   try {
     const response = await EmailVerificationService.sendResetToken(
+      req.body.email
+    );
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+exports.sendVerifyToken = async (req, res, next) => {
+  try {
+    const response = await EmailVerificationService.sendVerifyToken(
       req.body.email
     );
     res.status(200).json(response);
@@ -113,3 +125,17 @@ exports.resetForgottenPassword = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.verifyEmail = async (req, res, next) => {
+  try {
+    const response = await EmailVerificationService.verifyEmail(
+      req.body.userId,
+      req.body.token,
+    );
+    res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
+};
+
+

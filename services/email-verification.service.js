@@ -70,6 +70,39 @@ exports.sendResetToken = async (email) => {
   }
 };
 
+exports.sendVerifyToken = async (email) => {
+  email = email.toLowerCase();
+
+  const user = await User.findOne({ email: email });
+  let token = await Token.findOne({ userId: user._id });
+  if (token) {
+    await token.deleteOne();
+  }
+
+  if (user) {
+    // create a four digit code
+    const code = Math.floor(100000 + Math.random() * 900000);
+
+    const resetToken = await Token.create({
+      userId: user._id,
+      token: code,
+      createdAt: Date.now(),
+    });
+
+    const link = `http://localhost:3000/verify-email/${resetToken.token}`;
+    const html = `Hi ${user.fullName}, <br><br> Please enter the code to Verify Your E-mail <br><br> <p>${code}</p> <br><br>`;
+
+    sendEmail({
+      to: user.email,
+      subject: "Verify E-mail",
+      text: "Verify E-mail",
+      html: html,
+    });
+
+    return true;
+  }
+};
+
 exports.resetForgotPassword = async (userId, token, password) => {
   let passwordResetToken = await Token.findOne({ userId });
 
@@ -99,3 +132,32 @@ exports.resetForgotPassword = async (userId, token, password) => {
 
   return true;
 };
+
+exports.verifyEmail = async (userId, token) => {
+  let verifyEmailToken = await Token.findOne({ userId });
+
+  const isValid = await this.compare(token, verifyEmailToken.token);
+
+  if (!isValid) {
+    throw new CustomError(errorMessages.INVALID_TOKEN, 400);
+  }
+  await UserRepository.update(userId, { isEmailVerified: true });
+  const user = await User.findById({ _id: userId });
+
+  // send confirmation mail
+  const html = `Hi ${user.fullName}, <br><br> Your Email has been verifried <br><br> If you did not request this, please contact us immediately.`;
+
+  sendEmail({
+    to: user.email,
+    subject: "E-mail Verified",
+    text: "E-mail Verified",
+    html: html,
+  });
+
+  await verifyEmailToken.deleteOne();
+
+  return true;
+};
+
+
+

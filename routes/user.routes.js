@@ -21,8 +21,12 @@ router.post("/change-password", auth, UserController.updatePassword);
 
 router.put("/update-profile", auth, UserController.updateUserDetails);
 
-router.post("/send-token", auth, UserController.verifyEmailToken);
+router.post("/send-reset-token", auth, UserController.sendResetToken);
+
+router.post("/send-verify-token", auth, UserController.sendVerifyToken);
 
 router.post("/forgot-password", UserController.resetForgottenPassword);
+
+router.post('/verify-email', auth, UserController.verifyEmail);
 
 module.exports = router;

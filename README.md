@@ -5,8 +5,8 @@ If you would still prefer to do the installation manually, follow these steps:
 Clone the repo:
 
 ```bash
-git clone https://github.com/Akpughe/simple-nodejs-express-boilterplate.git
-cd simple-nodejs-express-boilterplate
+gh repo clone AmineBenzaazaa/SpaceZ
+cd SpaceZ
 ```
 
 Install the dependencies:
@@ -39,6 +39,7 @@ src\
  |--models\         # Mongoose models (data layer)
  |--routes\         # Routes
  |--services\       # Business logic (service layer)
+ |--validations\    # Validation for requested data
  |--utils\          # Utility classes and functions
  |--app.route.js    # Parent route file
  |--app.js          # Express app
